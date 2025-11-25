@@ -18,10 +18,12 @@
 
 body {
   display: flex;
-  flex-direction: column;
-  min-width: 100vw;
-  min-height: 100vh;
-  margin: 0;
+    flex-direction: column;
+    min-width: 100vw;
+    min-height: 100vh;
+    margin: 0;
+    padding: 70px 156px;
+    box-sizing: border-box;
 }
 
 main {
