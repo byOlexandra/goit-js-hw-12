@@ -13,19 +13,19 @@ import "izitoast/dist/css/iziToast.min.css";
 
 const form = document.querySelector(".form");
 const loadMoreBtn = document.querySelector(".load-more-btn");
-const firstCard = document.querySelector('.gallery-item');
 
 
 //* EVENT
 
 
-let page = 1;
+let page = 0;
 let prevSearch = "";
 let totalLoaded = 0;
 
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    hideLoadMoreButton()
+    hideLoadMoreButton();
+
     const search = e.target.elements['search-text'].value.trim();
     if (!search) {
         iziToast.info({
@@ -35,13 +35,14 @@ form.addEventListener("submit", async (e) => {
         return;
     } 
     if (search !== prevSearch) {
-        page = 1;
+        page = 0;
         prevSearch = search;
         totalLoaded = 0;
-    }
-    
-    clearGallery()
+        clearGallery()
+    }    
+    page += 1;
     showLoader()
+
     try {
         const data = await getImagesByQuery(search, page)
         hideLoader();
@@ -52,8 +53,10 @@ form.addEventListener("submit", async (e) => {
             })
             return;
         }        
+
         createGallery(data.hits);
         totalLoaded += data.hits.length;
+
         if (totalLoaded >= data.totalHits) {
             iziToast.info({
                 message: "We're sorry, but you've reached the end of search results.",
@@ -62,9 +65,9 @@ form.addEventListener("submit", async (e) => {
             hideLoadMoreButton()
             return;
         }
-        page += 1;
         showLoadMoreButton()
     }
+
     catch(error) {
         hideLoader();
         iziToast.error({
@@ -77,10 +80,13 @@ form.addEventListener("submit", async (e) => {
 loadMoreBtn.addEventListener("click", async (e) => {
     showLoader()
     hideLoadMoreButton()
+    page += 1;
+    
     try {
         const data = await getImagesByQuery(prevSearch, page);    
         hideLoader()
         createGallery(data.hits)
+        const firstCard = document.querySelector('.gallery-item');
         if (firstCard) {
             const cardHeight = firstCard.getBoundingClientRect().height;
             window.scrollBy({
@@ -97,7 +103,6 @@ loadMoreBtn.addEventListener("click", async (e) => {
             hideLoadMoreButton()
             return;
         }
-        page += 1;
         showLoadMoreButton()
     }   
     catch (error) {
